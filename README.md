@@ -1,42 +1,25 @@
-# sv
+# Spirits
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Application web de gestion des spiritueux, construite avec SvelteKit 2 et Svelte 5 (runes).
 
-## Creating a project
+## Stack
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **SvelteKit 2** — framework fullstack (routing, SSR, form actions)
+- **Svelte 5** — mode runes uniquement (`$state`, `$derived`, `$effect`, `$props`)
+- **TypeScript** — strict mode activé
+- **Vite 8** — bundler
 
-```sh
-# create a new project
-npx sv create my-app
+## Prérequis
+
+- Node.js >= 20
+- npm >= 10
+
+## Commandes
+
+```bash
+npm install        # installer les dépendances
+npm run dev        # serveur de développement (http://localhost:5173)
+npm run build      # build de production
+npm run preview    # prévisualiser le build
+npm run check      # vérification des types TypeScript/Svelte
 ```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@0.15.1 create --template minimal --types ts --install npm .
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
