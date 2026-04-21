@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import type { PageData } from './$types';
 
-	let { data } = $props();
+	let { data }: { data: PageData } = $props();
 </script>
 
 <svelte:head>
@@ -11,12 +12,13 @@
 <h1>Catalogue des spiritueux</h1>
 
 <ul class="liste">
-	{#each data.spiritueux as s (s.id)}
+	{#each data.spirits as spirit (spirit.id)}
 		<li>
-			<a class="carte" href={resolve('/spiritueux/[id]', { id: s.id })}>
-				<span class="nom">{s.nom}</span>
-				<span class="type">{s.type}</span>
-				<span class="degre">{s.degreAlcool}&nbsp;%</span>
+			<a class="carte" href={resolve('/spiritueux/[id]', { id: String(spirit.id) })}>
+				<span class="nom">{spirit.name}</span>
+				<span class="type">{spirit.category}</span>
+				<span class="origine">{spirit.origin}</span>
+				<span class="degre">{spirit.abv.toLocaleString('fr-FR')}&nbsp;%</span>
 			</a>
 		</li>
 	{/each}
@@ -40,7 +42,7 @@
 
 	.carte {
 		display: grid;
-		grid-template-columns: 1fr max-content max-content;
+		grid-template-columns: 1fr max-content max-content max-content;
 		align-items: baseline;
 		gap: 1rem;
 		padding: 1rem 1.25rem;
@@ -60,9 +62,9 @@
 		font-weight: 600;
 	}
 
-	.type {
+	.type,
+	.origine {
 		color: var(--color-fg-muted);
-		text-transform: capitalize;
 	}
 
 	.degre {

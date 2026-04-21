@@ -23,3 +23,7 @@ const spirits: readonly Spirit[] = Object.freeze([
 export function getAllSpirits(): readonly Spirit[] {
 	return spirits;
 }
+
+export function getSpiritById(id: number): Spirit | undefined {
+	return spirits.find((s) => s.id === id);
+}

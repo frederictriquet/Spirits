@@ -1,19 +1,24 @@
 <script lang="ts">
-	let { data } = $props();
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 </script>
 
 <svelte:head>
-	<title>Spiritueux — {data.spiritueux.nom}</title>
+	<title>Spiritueux — {data.spirit.name}</title>
 </svelte:head>
 
 <article class="carte">
-	<h1>{data.spiritueux.nom}</h1>
+	<h1>{data.spirit.name}</h1>
 	<dl>
-		<dt>Type</dt>
-		<dd class="type">{data.spiritueux.type}</dd>
+		<dt>Catégorie</dt>
+		<dd>{data.spirit.category}</dd>
+
+		<dt>Origine</dt>
+		<dd>{data.spirit.origin}</dd>
 
 		<dt>Degré d'alcool</dt>
-		<dd>{data.spiritueux.degreAlcool}&nbsp;%</dd>
+		<dd>{data.spirit.abv.toLocaleString('fr-FR')}&nbsp;%</dd>
 	</dl>
 </article>
 
@@ -47,9 +52,5 @@
 	dd {
 		margin: 0;
 		color: var(--color-fg);
-	}
-
-	.type {
-		text-transform: capitalize;
 	}
 </style>
