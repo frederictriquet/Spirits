@@ -1,25 +1,19 @@
 <script lang="ts">
-	import type { Spiritueux } from '$lib/types/spiritueux';
-
-	const spiritueux: Spiritueux = {
-		nom: 'Lagavulin 16 ans',
-		degreAlcool: 43,
-		type: 'whisky'
-	};
+	let { data } = $props();
 </script>
 
 <svelte:head>
-	<title>Spiritueux — {spiritueux.nom}</title>
+	<title>Spiritueux — {data.spiritueux.nom}</title>
 </svelte:head>
 
 <article class="carte">
-	<h1>{spiritueux.nom}</h1>
+	<h1>{data.spiritueux.nom}</h1>
 	<dl>
 		<dt>Type</dt>
-		<dd class="type">{spiritueux.type}</dd>
+		<dd class="type">{data.spiritueux.type}</dd>
 
 		<dt>Degré d'alcool</dt>
-		<dd>{spiritueux.degreAlcool}%</dd>
+		<dd>{data.spiritueux.degreAlcool}&nbsp;%</dd>
 	</dl>
 </article>
 
