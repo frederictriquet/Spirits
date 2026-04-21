@@ -25,3 +25,7 @@ const CATALOGUE: readonly Spiritueux[] = [
 export function trouverSpiritueux(id: string): Spiritueux | undefined {
 	return CATALOGUE.find((s) => s.id === id);
 }
+
+export function listerSpiritueux(): readonly Spiritueux[] {
+	return CATALOGUE;
+}
