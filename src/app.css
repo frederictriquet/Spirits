@@ -1,0 +1,48 @@
+/* Variables de thème — thème clair par défaut. */
+:root {
+	--color-bg: #ffffff;
+	--color-surface: #f7f7f7;
+	--color-fg: #1a1a1a;
+	--color-fg-muted: #555555;
+	--color-border: #e5e5e5;
+	--color-primary: #ff3e00;
+	--color-primary-fg: #ffffff;
+}
+
+/* Thème sombre — activé via data-theme="dark" sur <html>. */
+:root[data-theme='dark'] {
+	--color-bg: #0f0f10;
+	--color-surface: #1a1a1c;
+	--color-fg: #f2f2f2;
+	--color-fg-muted: #a0a0a0;
+	--color-border: #2a2a2d;
+	--color-primary: #ff5722;
+	--color-primary-fg: #ffffff;
+}
+
+html {
+	color-scheme: light;
+}
+
+html[data-theme='dark'] {
+	color-scheme: dark;
+}
+
+body {
+	margin: 0;
+	background: var(--color-bg);
+	color: var(--color-fg);
+	font-family:
+		system-ui,
+		-apple-system,
+		'Segoe UI',
+		Roboto,
+		sans-serif;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease;
+}
+
+a {
+	color: var(--color-primary);
+}
