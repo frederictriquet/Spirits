@@ -12,28 +12,33 @@
 
 <p class="count">{data.spirits.length} spiritueux référencés.</p>
 
-<div class="table-wrapper">
-	<table>
-		<thead>
-			<tr>
-				<th scope="col">Nom</th>
-				<th scope="col">Catégorie</th>
-				<th scope="col">Origine</th>
-				<th scope="col" class="num">Degré&nbsp;(%)</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each data.spirits as spirit (spirit.id)}
+{#if data.spirits.length === 0}
+	<p class="empty">Aucun spiritueux à afficher.</p>
+{:else}
+	<div class="table-wrapper">
+		<table>
+			<caption class="sr-only">Liste des spiritueux référencés</caption>
+			<thead>
 				<tr>
-					<td>{spirit.name}</td>
-					<td>{spirit.category}</td>
-					<td>{spirit.origin}</td>
-					<td class="num">{spirit.abv.toLocaleString('fr-FR')}</td>
+					<th scope="col">Nom</th>
+					<th scope="col">Catégorie</th>
+					<th scope="col">Origine</th>
+					<th scope="col" class="num">Degré&nbsp;(%)</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
-</div>
+			</thead>
+			<tbody>
+				{#each data.spirits as spirit (spirit.id)}
+					<tr>
+						<td>{spirit.name}</td>
+						<td>{spirit.category}</td>
+						<td>{spirit.origin}</td>
+						<td class="num">{spirit.abv.toLocaleString('fr-FR')}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+{/if}
 
 <style>
 	h1 {
@@ -44,6 +49,23 @@
 		color: var(--color-fg-muted);
 		margin-top: 0;
 		margin-bottom: 1rem;
+	}
+
+	.empty {
+		color: var(--color-fg-muted);
+		font-style: italic;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	.table-wrapper {

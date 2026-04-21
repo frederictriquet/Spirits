@@ -1,13 +1,13 @@
 export type Spirit = {
-	id: number;
-	name: string;
-	category: string;
-	origin: string;
-	abv: number;
+	readonly id: number;
+	readonly name: string;
+	readonly category: string;
+	readonly origin: string;
+	readonly abv: number;
 };
 
 // Données statiques en attendant une vraie base de données.
-const spirits: Spirit[] = [
+const spirits: readonly Spirit[] = Object.freeze([
 	{ id: 1, name: 'Ardbeg 10 ans', category: 'Whisky', origin: 'Écosse', abv: 46 },
 	{ id: 2, name: 'Hennessy VS', category: 'Cognac', origin: 'France', abv: 40 },
 	{ id: 3, name: 'Havana Club 7 ans', category: 'Rhum', origin: 'Cuba', abv: 40 },
@@ -18,8 +18,8 @@ const spirits: Spirit[] = [
 	{ id: 8, name: 'Rémy Martin XO', category: 'Cognac', origin: 'France', abv: 40 },
 	{ id: 9, name: 'Diplomático Reserva Exclusiva', category: 'Rhum', origin: 'Venezuela', abv: 40 },
 	{ id: 10, name: 'Hendrick’s', category: 'Gin', origin: 'Écosse', abv: 41.4 }
-];
+] as const satisfies readonly Spirit[]);
 
-export function getAllSpirits(): Spirit[] {
+export function getAllSpirits(): readonly Spirit[] {
 	return spirits;
 }
