@@ -31,3 +31,12 @@ node_modules/
 .worktrees/
 .security-key
 logs/security/
+
+# Base de données SQLite locale
+data/
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+data/test.db

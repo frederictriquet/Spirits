@@ -1,74 +1,238 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	type ColId = 'nom' | 'type' | 'prixAchat' | 'degreAlcool';
+
+	let colTri = $state<ColId | null>(null);
+	let ordreTri = $state<'asc' | 'desc'>('asc');
+
+	let filtreNom = $state('');
+	let filtreType = $state('');
+	let filtrePrixMin = $state<number | undefined>(undefined);
+	let filtreDegreMin = $state<number | undefined>(undefined);
+
+	const TYPES = [
+		'whisky',
+		'rhum',
+		'gin',
+		'vodka',
+		'tequila',
+		'cognac',
+		'armagnac',
+		'eau-de-vie',
+		'vin'
+	];
+
+	function trierPar(col: ColId) {
+		if (colTri === col) {
+			ordreTri = ordreTri === 'asc' ? 'desc' : 'asc';
+		} else {
+			colTri = col;
+			ordreTri = 'asc';
+		}
+	}
+
+	function indicateur(col: ColId): string {
+		if (colTri !== col) return '';
+		return ordreTri === 'asc' ? ' ↑' : ' ↓';
+	}
+
+	const lignes = $derived.by(() => {
+		let liste = [...data.bouteilles];
+
+		if (filtreNom.trim()) {
+			const q = filtreNom.toLowerCase();
+			liste = liste.filter((b) => b.nom.toLowerCase().includes(q));
+		}
+		if (filtreType) {
+			liste = liste.filter((b) => b.type === filtreType);
+		}
+		if (filtrePrixMin !== undefined) {
+			liste = liste.filter((b) => b.prixAchat >= filtrePrixMin!);
+		}
+		if (filtreDegreMin !== undefined) {
+			liste = liste.filter((b) => b.degreAlcool >= filtreDegreMin!);
+		}
+
+		if (colTri !== null) {
+			const col = colTri;
+			const dir = ordreTri;
+			liste.sort((a, b) => {
+				const va = a[col];
+				const vb = b[col];
+				if (typeof va === 'string' && typeof vb === 'string') {
+					return dir === 'asc' ? va.localeCompare(vb, 'fr') : vb.localeCompare(va, 'fr');
+				}
+				return dir === 'asc' ? (va as number) - (vb as number) : (vb as number) - (va as number);
+			});
+		}
+
+		return liste;
+	});
 </script>
 
 <svelte:head>
-	<title>Spirits — Catalogue</title>
+	<title>Spirits — Ma cave</title>
 </svelte:head>
 
-<h1>Catalogue des spiritueux</h1>
+<div class="wrapper">
+	<h1>Ma cave</h1>
 
-<ul class="liste">
-	{#each data.spirits as spirit (spirit.id)}
-		<li>
-			<a class="carte" href={resolve('/spiritueux/[id]', { id: String(spirit.id) })}>
-				<span class="nom">{spirit.name}</span>
-				<span class="type">{spirit.category}</span>
-				<span class="origine">{spirit.origin}</span>
-				<span class="degre">{spirit.abv.toLocaleString('fr-FR')}&nbsp;%</span>
-			</a>
-		</li>
-	{/each}
-</ul>
+	<table>
+		<thead>
+			<tr>
+				<th onclick={() => trierPar('nom')}>
+					<span class="col-label">Nom{indicateur('nom')}</span>
+					<input
+						type="text"
+						value={filtreNom}
+						oninput={(e) => {
+							filtreNom = e.currentTarget.value;
+						}}
+						onclick={(e) => e.stopPropagation()}
+						placeholder="Filtrer…"
+					/>
+				</th>
+				<th onclick={() => trierPar('type')}>
+					<span class="col-label">Type{indicateur('type')}</span>
+					<select bind:value={filtreType} onclick={(e) => e.stopPropagation()}>
+						<option value="">Tous</option>
+						{#each TYPES as t (t)}
+							<option value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+						{/each}
+					</select>
+				</th>
+				<th onclick={() => trierPar('prixAchat')}>
+					<span class="col-label">Prix d'achat (€){indicateur('prixAchat')}</span>
+					<input
+						type="number"
+						bind:value={filtrePrixMin}
+						onclick={(e) => e.stopPropagation()}
+						placeholder="Min…"
+						min="0"
+						step="0.01"
+					/>
+				</th>
+				<th onclick={() => trierPar('degreAlcool')}>
+					<span class="col-label">Degré d'alcool (%){indicateur('degreAlcool')}</span>
+					<input
+						type="number"
+						bind:value={filtreDegreMin}
+						onclick={(e) => e.stopPropagation()}
+						placeholder="Min…"
+						min="0"
+						max="100"
+						step="0.1"
+					/>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each lignes as b (b.id)}
+				<tr onclick={() => goto(resolve('/spiritueux/[id]', { id: b.id.toString() }))}>
+					<td>{b.nom}</td>
+					<td class="capitalize">{b.type}</td>
+					<td class="num">
+						{b.prixAchat.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}&nbsp;€
+					</td>
+					<td class="num">{b.degreAlcool}&nbsp;%</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
 
 <style>
+	.wrapper {
+		max-width: 56rem;
+		margin: 2rem auto;
+		padding: 0 1rem;
+	}
+
 	h1 {
-		max-width: 48rem;
-		margin: 2rem auto 1rem;
+		margin-bottom: 1.5rem;
 		color: var(--color-primary);
 	}
 
-	.liste {
-		max-width: 48rem;
-		margin: 0 auto;
-		padding: 0;
-		list-style: none;
-		display: grid;
-		gap: 0.75rem;
-	}
-
-	.carte {
-		display: grid;
-		grid-template-columns: 1fr max-content max-content max-content;
-		align-items: baseline;
-		gap: 1rem;
-		padding: 1rem 1.25rem;
+	table {
+		width: 100%;
+		border-collapse: collapse;
 		background: var(--color-surface);
 		border: 1px solid var(--color-border);
 		border-radius: 0.75rem;
-		color: var(--color-fg);
-		text-decoration: none;
-		transition: border-color 0.15s ease;
+		overflow: hidden;
 	}
 
-	.carte:hover {
-		border-color: var(--color-primary);
+	th {
+		text-align: left;
+		padding: 0;
+		background: var(--color-surface);
+		border-bottom: 2px solid var(--color-border);
+		cursor: pointer;
+		user-select: none;
 	}
 
-	.nom {
+	th:hover {
+		background: color-mix(in srgb, var(--color-primary) 5%, var(--color-surface));
+	}
+
+	.col-label {
+		display: block;
+		padding: 0.75rem 0.75rem 1.25rem;
 		font-weight: 600;
-	}
-
-	.type,
-	.origine {
+		font-size: 0.9rem;
 		color: var(--color-fg-muted);
 	}
 
-	.degre {
-		color: var(--color-fg-muted);
+	th input,
+	th select {
+		display: block;
+		width: calc(100% - 1rem);
+		box-sizing: border-box;
+		padding: 0.2rem 0.4rem;
+		margin: 0 0.5rem 0.5rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.35rem;
+		background: var(--color-bg, white);
+		color: var(--color-fg);
+		font-size: 0.8rem;
+		cursor: auto;
+	}
+
+	th input:focus,
+	th select:focus {
+		outline: 2px solid var(--color-primary);
+	}
+
+	td {
+		padding: 0.75rem;
+		border-bottom: 1px solid var(--color-border);
+		color: var(--color-fg);
+	}
+
+	tbody tr {
+		cursor: pointer;
+		transition: background 0.1s;
+	}
+
+	tbody tr:hover {
+		background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+	}
+
+	tbody tr:last-child td {
+		border-bottom: none;
+	}
+
+	.capitalize {
+		text-transform: capitalize;
+	}
+
+	.num {
+		text-align: right;
 		font-variant-numeric: tabular-nums;
 	}
 </style>

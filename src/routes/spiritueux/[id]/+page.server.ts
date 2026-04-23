@@ -1,15 +1,20 @@
-import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { getSpiritById } from '$lib/server/spirits';
+import { error, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import { getBouteille, deleteBouteille } from '$lib/server/db/bouteilles';
 
 export const load: PageServerLoad = ({ params }) => {
-	const id = Number(params.id);
-	if (!Number.isInteger(id)) {
-		error(404, 'Spiritueux introuvable');
+	const id = parseInt(params.id, 10);
+	if (isNaN(id)) error(404, 'Spiritueux introuvable');
+	const bouteille = getBouteille(id);
+	if (!bouteille) error(404, 'Spiritueux introuvable');
+	return { bouteille };
+};
+
+export const actions: Actions = {
+	delete: async ({ params }) => {
+		const id = parseInt(params.id, 10);
+		if (isNaN(id)) error(400, 'ID invalide');
+		deleteBouteille(id);
+		redirect(303, '/');
 	}
-	const spirit = getSpiritById(id);
-	if (!spirit) {
-		error(404, 'Spiritueux introuvable');
-	}
-	return { spirit };
 };

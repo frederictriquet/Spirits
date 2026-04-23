@@ -55,7 +55,7 @@
 
 		<div class="actions">
 			<button type="submit" class="btn-primary">Ajouter</button>
-			<a href={resolve('/spirits')} class="btn-annuler">Annuler</a>
+			<a href={resolve('/')} class="btn-annuler">Annuler</a>
 		</div>
 	</form>
 </div>

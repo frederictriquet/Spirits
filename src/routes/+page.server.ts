@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { getAllSpirits } from '$lib/server/spirits';
+import { getAllBouteilles } from '$lib/server/db/bouteilles';
 
 export const load: PageServerLoad = () => {
-	return { spirits: getAllSpirits() };
+	return { bouteilles: getAllBouteilles() };
 };
