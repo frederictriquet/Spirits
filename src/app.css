@@ -1,23 +1,32 @@
 /* Variables de thème — thème clair par défaut. */
 :root {
-	--color-bg: #ffffff;
-	--color-surface: #f7f7f7;
-	--color-fg: #1a1a1a;
-	--color-fg-muted: #555555;
-	--color-border: #e5e5e5;
-	--color-primary: #ff3e00;
-	--color-primary-fg: #ffffff;
+	/* Palette — OKLCH, neutrals teintés ambre (hue 80), accent or ambre (hue 65). */
+	--color-bg: oklch(98.5% 0.006 80);
+	--color-surface: oklch(96% 0.008 80);
+	--color-fg: oklch(18% 0.012 80);
+	--color-fg-muted: oklch(40% 0.01 80);
+	--color-border: oklch(88% 0.01 80);
+	--color-primary: oklch(75% 0.16 65);
+	--color-primary-fg: oklch(15% 0.01 80);
+	--color-danger: oklch(52% 0.22 25);
+	--color-danger-fg: oklch(98% 0.005 80);
+	/* Familles typographiques — Spectral pour les titres, Jost pour le corps. */
+	--font-display: 'Spectral', serif;
+	--font-body: 'Jost', sans-serif;
 }
 
 /* Thème sombre — activé via data-theme="dark" sur <html>. */
 :root[data-theme='dark'] {
-	--color-bg: #0f0f10;
-	--color-surface: #1a1a1c;
-	--color-fg: #f2f2f2;
-	--color-fg-muted: #a0a0a0;
-	--color-border: #2a2a2d;
-	--color-primary: #ff5722;
-	--color-primary-fg: #ffffff;
+	/* Thème sombre — charbon chaud teinté ambre. */
+	--color-bg: oklch(12% 0.012 80);
+	--color-surface: oklch(17% 0.015 80);
+	--color-fg: oklch(94% 0.008 80);
+	--color-fg-muted: oklch(72% 0.008 80);
+	--color-border: oklch(26% 0.015 80);
+	--color-primary: oklch(78% 0.16 65);
+	--color-primary-fg: oklch(15% 0.01 80);
+	--color-danger: oklch(62% 0.2 25);
+	--color-danger-fg: oklch(12% 0.01 80);
 }
 
 html {
@@ -32,12 +41,7 @@ body {
 	margin: 0;
 	background: var(--color-bg);
 	color: var(--color-fg);
-	font-family:
-		system-ui,
-		-apple-system,
-		'Segoe UI',
-		Roboto,
-		sans-serif;
+	font-family: var(--font-body);
 	transition:
 		background-color 0.2s ease,
 		color 0.2s ease;
@@ -45,4 +49,25 @@ body {
 
 a {
 	color: var(--color-primary);
+}
+
+/* Accessibilité — indicateur de focus visible pour la navigation clavier. */
+*:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 2px;
+}
+
+/* Titres — Spectral pour une allure sobre et sérieuse. */
+h1 {
+	font-family: var(--font-display);
+	font-size: clamp(1.6rem, 4vw, 2.4rem);
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+h2 {
+	font-family: var(--font-display);
+	font-size: clamp(1.1rem, 3vw, 1.4rem);
+	font-weight: 400;
+	line-height: 1.3;
 }

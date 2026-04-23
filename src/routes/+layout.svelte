@@ -7,6 +7,12 @@
 </script>
 
 <svelte:head>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Jost:wght@400;500;600&display=swap"
+		rel="stylesheet"
+	/>
 	<title>Spirits</title>
 	<link rel="icon" href={favicon} />
 </svelte:head>

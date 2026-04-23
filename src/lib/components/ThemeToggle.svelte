@@ -74,9 +74,4 @@
 	.theme-toggle:hover {
 		background: var(--color-border);
 	}
-
-	.theme-toggle:focus-visible {
-		outline: 2px solid var(--color-primary);
-		outline-offset: 2px;
-	}
 </style>

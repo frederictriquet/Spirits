@@ -10,6 +10,7 @@
 
 <article class="carte">
 	<h1>{data.spirit.name}</h1>
+	<h2 class="sr-only">Détails</h2>
 	<dl>
 		<dt>Catégorie</dt>
 		<dd>{data.spirit.category}</dd>
@@ -52,5 +53,17 @@
 	dd {
 		margin: 0;
 		color: var(--color-fg);
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 </style>
