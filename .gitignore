@@ -32,6 +32,14 @@ node_modules/
 .security-key
 logs/security/
 
+# Claude Code / agents
+.agents/
+.claude/
+skills-lock.json
+
+# VS Code
+.vscode/
+
 # Base de données SQLite locale
 data/
 
