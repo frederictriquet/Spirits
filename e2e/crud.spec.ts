@@ -67,6 +67,28 @@ test.describe('Modifier une bouteille', () => {
 	});
 });
 
+test.describe('Créer depuis la liste', () => {
+	test('un lien "Ajouter une bouteille" est visible sur la homepage', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.getByRole('link', { name: 'Ajouter une bouteille' })).toBeVisible();
+	});
+
+	test('créer depuis la liste ajoute la bouteille au tableau', async ({ page }) => {
+		await page.goto('/');
+		await page.getByRole('link', { name: 'Ajouter une bouteille' }).click();
+		await expect(page).toHaveURL('/bouteilles/new');
+		await page.getByLabel('Nom').fill('E2E Mezcal Nuevo');
+		await page.getByLabel('Type').selectOption('eau-de-vie');
+		await page.getByLabel("Prix d'achat (€)").fill('55');
+		await page.getByLabel("Degré d'alcool (%)").fill('45');
+		await page.getByRole('button', { name: 'Ajouter' }).click();
+		await expect(page).toHaveURL(/\/spiritueux\/\d+/);
+		await page.getByRole('link', { name: '← Ma cave' }).click();
+		await expect(page).toHaveURL('/');
+		await expect(page.getByRole('cell', { name: 'E2E Mezcal Nuevo' })).toBeVisible();
+	});
+});
+
 test.describe('Supprimer une bouteille', () => {
 	test('supprime et revient à la liste', async ({ page }) => {
 		await page.goto('/bouteilles/new');

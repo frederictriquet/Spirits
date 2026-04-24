@@ -80,7 +80,10 @@
 </svelte:head>
 
 <div class="wrapper">
-	<h1>Ma cave</h1>
+	<div class="entete">
+		<h1>Ma cave</h1>
+		<a href={resolve('/bouteilles/new')} class="btn-ajouter">Ajouter une bouteille</a>
+	</div>
 
 	<table>
 		<thead>
@@ -153,9 +156,30 @@
 		padding: 0 1rem;
 	}
 
-	h1 {
+	.entete {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
 		margin-bottom: 1.5rem;
+	}
+
+	h1 {
+		margin: 0;
 		color: var(--color-primary);
+	}
+
+	.btn-ajouter {
+		padding: 0.5rem 1.25rem;
+		background: var(--color-primary);
+		color: white;
+		border-radius: 0.5rem;
+		text-decoration: none;
+		font-size: 0.95rem;
+		white-space: nowrap;
+	}
+
+	.btn-ajouter:hover {
+		opacity: 0.9;
 	}
 
 	table {
