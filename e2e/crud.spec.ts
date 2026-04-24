@@ -16,7 +16,7 @@ test.describe('Créer une bouteille', () => {
 			document.querySelectorAll('form [required]').forEach((el) => el.removeAttribute('required'));
 		});
 		// Renseigne tout sauf le nom pour isoler la validation serveur du nom.
-		await page.getByLabel('Type').selectOption('whisky');
+		await page.getByLabel('Type').selectOption({ label: 'Whisky' });
 		await page.getByLabel("Prix d'achat (€)").fill('30');
 		await page.getByLabel("Degré d'alcool (%)").fill('40');
 		await page.getByRole('button', { name: 'Ajouter' }).click();
@@ -26,7 +26,7 @@ test.describe('Créer une bouteille', () => {
 	test('crée et redirige vers le détail', async ({ page }) => {
 		await page.goto('/bouteilles/new');
 		await page.getByLabel('Nom').fill('E2E Calvados Test');
-		await page.getByLabel('Type').selectOption('eau-de-vie');
+		await page.getByLabel('Type').selectOption({ label: 'Eau-de-vie' });
 		await page.getByLabel("Prix d'achat (€)").fill('45');
 		await page.getByLabel("Degré d'alcool (%)").fill('40');
 		await page.getByRole('button', { name: 'Ajouter' }).click();
@@ -41,7 +41,7 @@ test.describe('Modifier une bouteille', () => {
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/bouteilles/new');
 		await page.getByLabel('Nom').fill('E2E Gin Modifiable');
-		await page.getByLabel('Type').selectOption('gin');
+		await page.getByLabel('Type').selectOption({ label: 'Gin' });
 		await page.getByLabel("Prix d'achat (€)").fill('28');
 		await page.getByLabel("Degré d'alcool (%)").fill('44');
 		await page.getByRole('button', { name: 'Ajouter' }).click();
@@ -52,7 +52,8 @@ test.describe('Modifier une bouteille', () => {
 	test('pré-remplit le formulaire', async ({ page }) => {
 		await page.goto(`/bouteilles/${id}/edit`);
 		await expect(page.getByLabel('Nom')).toHaveValue('E2E Gin Modifiable');
-		await expect(page.getByLabel('Type')).toHaveValue('gin');
+		// Vérifie que l'option Gin est sélectionnée (par texte, la valeur étant un ID entier)
+		await expect(page.getByLabel('Type').locator('option:checked')).toContainText('Gin');
 		await expect(page.getByLabel("Prix d'achat (€)")).toHaveValue('28');
 		await expect(page.getByLabel("Degré d'alcool (%)")).toHaveValue('44');
 	});
@@ -78,7 +79,7 @@ test.describe('Créer depuis la liste', () => {
 		await page.getByRole('link', { name: 'Ajouter une bouteille' }).click();
 		await expect(page).toHaveURL('/bouteilles/new');
 		await page.getByLabel('Nom').fill('E2E Mezcal Nuevo');
-		await page.getByLabel('Type').selectOption('eau-de-vie');
+		await page.getByLabel('Type').selectOption({ label: 'Eau-de-vie' });
 		await page.getByLabel("Prix d'achat (€)").fill('55');
 		await page.getByLabel("Degré d'alcool (%)").fill('45');
 		await page.getByRole('button', { name: 'Ajouter' }).click();
@@ -93,7 +94,7 @@ test.describe('Supprimer une bouteille', () => {
 	test('supprime et revient à la liste', async ({ page }) => {
 		await page.goto('/bouteilles/new');
 		await page.getByLabel('Nom').fill('E2E À Supprimer');
-		await page.getByLabel('Type').selectOption('vodka');
+		await page.getByLabel('Type').selectOption({ label: 'Vodka' });
 		await page.getByLabel("Prix d'achat (€)").fill('20');
 		await page.getByLabel("Degré d'alcool (%)").fill('40');
 		await page.getByRole('button', { name: 'Ajouter' }).click();
