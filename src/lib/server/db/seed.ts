@@ -1,19 +1,53 @@
-import { db } from './index';
-import { bouteilles } from './schema';
+import Database from 'better-sqlite3';
 
-// Données initiales — 10 spiritueux représentatifs.
-const donnees = [
-	{ nom: 'Ardbeg 10 ans', type: 'whisky', prixAchat: 55.0, degreAlcool: 46 },
-	{ nom: 'Hennessy VS', type: 'cognac', prixAchat: 38.0, degreAlcool: 40 },
-	{ nom: 'Havana Club 7 ans', type: 'rhum', prixAchat: 22.0, degreAlcool: 40 },
-	{ nom: 'Tanqueray London Dry', type: 'gin', prixAchat: 20.0, degreAlcool: 43.1 },
-	{ nom: 'Patrón Silver', type: 'tequila', prixAchat: 45.0, degreAlcool: 40 },
-	{ nom: 'Grey Goose', type: 'vodka', prixAchat: 35.0, degreAlcool: 40 },
-	{ nom: 'Lagavulin 16 ans', type: 'whisky', prixAchat: 85.0, degreAlcool: 43 },
-	{ nom: 'Rémy Martin XO', type: 'cognac', prixAchat: 180.0, degreAlcool: 40 },
-	{ nom: 'Diplomático Reserva Exclusiva', type: 'rhum', prixAchat: 42.0, degreAlcool: 40 },
-	{ nom: "Hendrick's", type: 'gin', prixAchat: 38.0, degreAlcool: 41.4 }
-];
+// Script de seed pour la DB de développement (data/spirits.db).
+// Usage : npx vite-node src/lib/server/db/seed.ts
 
-db.insert(bouteilles).values(donnees).run();
-console.log(`${donnees.length} bouteilles insérées.`);
+const sqlite = new Database(process.env.DB_PATH ?? 'data/spirits.db');
+
+sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS types_spiritueux (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nom TEXT NOT NULL UNIQUE
+    )
+`);
+sqlite.exec(`
+    CREATE TABLE IF NOT EXISTS bouteilles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nom TEXT NOT NULL,
+        type_id INTEGER NOT NULL REFERENCES types_spiritueux(id),
+        prix_achat REAL NOT NULL,
+        degre_alcool REAL NOT NULL
+    )
+`);
+
+sqlite.exec('DELETE FROM bouteilles');
+sqlite.exec('DELETE FROM types_spiritueux');
+
+const insertType = sqlite.prepare('INSERT INTO types_spiritueux (nom) VALUES (?)');
+const whiskyId = insertType.run('Whisky').lastInsertRowid;
+const rhumId = insertType.run('Rhum').lastInsertRowid;
+const ginId = insertType.run('Gin').lastInsertRowid;
+const vodkaId = insertType.run('Vodka').lastInsertRowid;
+const tequilaId = insertType.run('Tequila').lastInsertRowid;
+const cognacId = insertType.run('Cognac').lastInsertRowid;
+insertType.run('Armagnac');
+insertType.run('Eau-de-vie');
+insertType.run('Vin');
+
+const insertBouteille = sqlite.prepare(
+	'INSERT INTO bouteilles (nom, type_id, prix_achat, degre_alcool) VALUES (?, ?, ?, ?)'
+);
+insertBouteille.run('Ardbeg 10 ans', whiskyId, 55.0, 46);
+insertBouteille.run('Hennessy VS', cognacId, 38.0, 40);
+insertBouteille.run('Havana Club 7 ans', rhumId, 22.0, 40);
+insertBouteille.run('Tanqueray London Dry', ginId, 20.0, 43.1);
+insertBouteille.run('Patrón Silver', tequilaId, 45.0, 40);
+insertBouteille.run('Grey Goose', vodkaId, 35.0, 40);
+insertBouteille.run('Lagavulin 16 ans', whiskyId, 85.0, 43);
+insertBouteille.run('Rémy Martin XO', cognacId, 180.0, 40);
+insertBouteille.run('Diplomático Reserva Exclusiva', rhumId, 42.0, 40);
+insertBouteille.run("Hendrick's", ginId, 38.0, 41.4);
+
+sqlite.close();
+console.log('Seed terminé.');

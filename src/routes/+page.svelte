@@ -11,21 +11,9 @@
 	let ordreTri = $state<'asc' | 'desc'>('asc');
 
 	let filtreNom = $state('');
-	let filtreType = $state('');
+	let filtreTypeId = $state<number | undefined>(undefined);
 	let filtrePrixMin = $state<number | undefined>(undefined);
 	let filtreDegreMin = $state<number | undefined>(undefined);
-
-	const TYPES = [
-		'whisky',
-		'rhum',
-		'gin',
-		'vodka',
-		'tequila',
-		'cognac',
-		'armagnac',
-		'eau-de-vie',
-		'vin'
-	];
 
 	function trierPar(col: ColId) {
 		if (colTri === col) {
@@ -48,8 +36,8 @@
 			const q = filtreNom.toLowerCase();
 			liste = liste.filter((b) => b.nom.toLowerCase().includes(q));
 		}
-		if (filtreType) {
-			liste = liste.filter((b) => b.type === filtreType);
+		if (filtreTypeId !== undefined) {
+			liste = liste.filter((b) => b.typeId === filtreTypeId);
 		}
 		if (filtrePrixMin !== undefined) {
 			liste = liste.filter((b) => b.prixAchat >= filtrePrixMin!);
@@ -62,8 +50,21 @@
 			const col = colTri;
 			const dir = ordreTri;
 			liste.sort((a, b) => {
-				const va = a[col];
-				const vb = b[col];
+				let va: string | number;
+				let vb: string | number;
+				if (col === 'nom') {
+					va = a.nom;
+					vb = b.nom;
+				} else if (col === 'type') {
+					va = a.type;
+					vb = b.type;
+				} else if (col === 'prixAchat') {
+					va = a.prixAchat;
+					vb = b.prixAchat;
+				} else {
+					va = a.degreAlcool;
+					vb = b.degreAlcool;
+				}
 				if (typeof va === 'string' && typeof vb === 'string') {
 					return dir === 'asc' ? va.localeCompare(vb, 'fr') : vb.localeCompare(va, 'fr');
 				}
@@ -82,6 +83,7 @@
 <div class="wrapper">
 	<div class="entete">
 		<h1>Ma cave</h1>
+		<a href={resolve('/types')} class="btn-secondaire">Gérer les types</a>
 		<a href={resolve('/bouteilles/new')} class="btn-ajouter">Ajouter une bouteille</a>
 	</div>
 
@@ -102,10 +104,10 @@
 				</th>
 				<th onclick={() => trierPar('type')}>
 					<span class="col-label">Type{indicateur('type')}</span>
-					<select bind:value={filtreType} onclick={(e) => e.stopPropagation()}>
-						<option value="">Tous</option>
-						{#each TYPES as t (t)}
-							<option value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+					<select bind:value={filtreTypeId} onclick={(e) => e.stopPropagation()}>
+						<option value={undefined}>Tous</option>
+						{#each data.types as t (t.id)}
+							<option value={t.id}>{t.nom}</option>
 						{/each}
 					</select>
 				</th>
@@ -161,11 +163,13 @@
 		align-items: baseline;
 		justify-content: space-between;
 		margin-bottom: 1.5rem;
+		gap: 0.75rem;
 	}
 
 	h1 {
 		margin: 0;
 		color: var(--color-primary);
+		flex: 1;
 	}
 
 	.btn-ajouter {
@@ -180,6 +184,21 @@
 
 	.btn-ajouter:hover {
 		opacity: 0.9;
+	}
+
+	.btn-secondaire {
+		padding: 0.5rem 1.25rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.5rem;
+		color: var(--color-fg-muted);
+		text-decoration: none;
+		font-size: 0.95rem;
+		white-space: nowrap;
+	}
+
+	.btn-secondaire:hover {
+		border-color: var(--color-primary);
+		color: var(--color-primary);
 	}
 
 	table {

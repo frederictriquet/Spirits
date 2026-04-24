@@ -1,16 +1,16 @@
 <script lang="ts">
-	import type { ActionData, PageData } from './$types';
 	import { resolve } from '$app/paths';
+	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
 <svelte:head>
-	<title>Modifier — {data.bouteille.nom}</title>
+	<title>Modifier le type — Spirits</title>
 </svelte:head>
 
 <div class="formulaire-wrapper">
-	<h1>Modifier la bouteille</h1>
+	<h1>Modifier le type</h1>
 
 	{#if form?.erreur}
 		<p class="erreur" role="alert">{form.erreur}</p>
@@ -19,49 +19,12 @@
 	<form method="POST">
 		<label>
 			Nom
-			<input type="text" name="nom" value={data.bouteille.nom} required autocomplete="off" />
-		</label>
-
-		<label>
-			Type
-			<select name="typeId" required>
-				{#each data.types as t (t.id)}
-					<option value={t.id} selected={t.id === data.bouteille.typeId}>{t.nom}</option>
-				{/each}
-			</select>
-		</label>
-
-		<label>
-			Prix d'achat (€)
-			<input
-				type="number"
-				name="prixAchat"
-				value={data.bouteille.prixAchat}
-				min="0.01"
-				step="0.01"
-				required
-			/>
-		</label>
-
-		<label>
-			Degré d'alcool (%)
-			<input
-				type="number"
-				name="degreAlcool"
-				value={data.bouteille.degreAlcool}
-				min="0.1"
-				max="100"
-				step="0.1"
-				required
-			/>
+			<input type="text" name="nom" value={data.type.nom} required autocomplete="off" />
 		</label>
 
 		<div class="actions">
 			<button type="submit" class="btn-primary">Enregistrer</button>
-			<a
-				href={resolve('/spiritueux/[id]', { id: data.bouteille.id.toString() })}
-				class="btn-annuler">Annuler</a
-			>
+			<a href={resolve('/types')} class="btn-annuler">Annuler</a>
 		</div>
 	</form>
 </div>
@@ -92,8 +55,7 @@
 		font-size: 0.9rem;
 	}
 
-	input,
-	select {
+	input {
 		padding: 0.5rem 0.75rem;
 		border: 1px solid var(--color-border);
 		border-radius: 0.5rem;
@@ -112,7 +74,7 @@
 	.btn-primary {
 		padding: 0.6rem 1.5rem;
 		background: var(--color-primary);
-		color: var(--color-primary-fg);
+		color: white;
 		border: none;
 		border-radius: 0.5rem;
 		font-size: 1rem;

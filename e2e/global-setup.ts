@@ -6,15 +6,19 @@ import Database from 'better-sqlite3';
 function setup() {
 	const sqlite = new Database('data/test.db');
 
+	// Recréer les tables depuis zéro pour garantir le bon schéma
+	sqlite.exec('DROP TABLE IF EXISTS bouteilles');
+	sqlite.exec('DROP TABLE IF EXISTS types_spiritueux');
+
 	sqlite.exec(`
-		CREATE TABLE IF NOT EXISTS types_spiritueux (
+		CREATE TABLE types_spiritueux (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			nom TEXT NOT NULL UNIQUE
 		)
 	`);
 
 	sqlite.exec(`
-		CREATE TABLE IF NOT EXISTS bouteilles (
+		CREATE TABLE bouteilles (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			nom TEXT NOT NULL,
 			type_id INTEGER NOT NULL REFERENCES types_spiritueux(id),
@@ -22,9 +26,6 @@ function setup() {
 			degre_alcool REAL NOT NULL
 		)
 	`);
-
-	sqlite.exec('DELETE FROM bouteilles');
-	sqlite.exec('DELETE FROM types_spiritueux');
 
 	const insertType = sqlite.prepare('INSERT INTO types_spiritueux (nom) VALUES (?)');
 	const whiskyId = insertType.run('Whisky').lastInsertRowid;

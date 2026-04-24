@@ -1,29 +1,26 @@
-import { fail, isRedirect, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 import { createBouteille } from '$lib/server/db/bouteilles';
+import { getAllTypes } from '$lib/server/db/types';
 import { bouteilleSchema } from '$lib/server/validation/bouteille';
-import type { Actions } from './$types';
+
+export const load: PageServerLoad = () => {
+	return { types: getAllTypes() };
+};
 
 export const actions: Actions = {
 	default: async ({ request }) => {
-		const data = await request.formData();
-
+		const formData = await request.formData();
 		const result = bouteilleSchema.safeParse({
-			nom: data.get('nom'),
-			type: data.get('type'),
-			prixAchat: data.get('prixAchat'),
-			degreAlcool: data.get('degreAlcool')
+			nom: formData.get('nom'),
+			typeId: formData.get('typeId'),
+			prixAchat: formData.get('prixAchat'),
+			degreAlcool: formData.get('degreAlcool')
 		});
-
 		if (!result.success) {
-			return fail(400, { erreur: result.error.issues[0].message });
+			return { erreur: result.error.issues[0].message };
 		}
-
-		try {
-			const bouteille = createBouteille(result.data);
-			redirect(303, `/spiritueux/${bouteille.id}`);
-		} catch (e) {
-			if (isRedirect(e)) throw e;
-			return fail(500, { erreur: 'Une erreur est survenue. Réessaie.' });
-		}
+		const bouteille = createBouteille(result.data);
+		redirect(303, `/spiritueux/${bouteille.id}`);
 	}
 };

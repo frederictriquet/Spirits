@@ -1,20 +1,8 @@
 <script lang="ts">
-	import type { ActionData } from './$types';
+	import type { ActionData, PageData } from './$types';
 	import { resolve } from '$app/paths';
 
-	let { form }: { form: ActionData } = $props();
-
-	const TYPES = [
-		'whisky',
-		'rhum',
-		'gin',
-		'vodka',
-		'tequila',
-		'cognac',
-		'armagnac',
-		'eau-de-vie',
-		'vin'
-	];
+	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
 <svelte:head>
@@ -36,9 +24,9 @@
 
 		<label>
 			Type
-			<select name="type" required>
-				{#each TYPES as t (t)}
-					<option value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+			<select name="typeId" required>
+				{#each data.types as t (t.id)}
+					<option value={t.id}>{t.nom}</option>
 				{/each}
 			</select>
 		</label>
