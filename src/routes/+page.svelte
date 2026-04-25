@@ -91,55 +91,76 @@
 		<thead>
 			<tr>
 				<th onclick={() => trierPar('nom')}>
-					<span class="col-label">Nom{indicateur('nom')}</span>
-					<input
-						type="text"
-						value={filtreNom}
-						oninput={(e) => {
-							filtreNom = e.currentTarget.value;
-						}}
-						onclick={(e) => e.stopPropagation()}
-						placeholder="Filtrer…"
-					/>
+					<!-- Le div.th-inner contrôle la hauteur (contrairement aux th dans les tables).
+					     Le label occupe > 50% de la hauteur → le clic au centre du th tombe sur le label. -->
+					<div class="th-inner">
+						<span class="col-label">Nom{indicateur('nom')}</span>
+						<input
+							type="text"
+							bind:value={filtreNom}
+							onclick={(e) => e.stopPropagation()}
+							placeholder="Filtrer…"
+						/>
+					</div>
 				</th>
 				<th onclick={() => trierPar('type')}>
-					<span class="col-label">Type{indicateur('type')}</span>
-					<select bind:value={filtreTypeId} onclick={(e) => e.stopPropagation()}>
-						<option value={undefined}>Tous</option>
-						{#each data.types as t (t.id)}
-							<option value={t.id}>{t.nom}</option>
-						{/each}
-					</select>
+					<div class="th-inner">
+						<span class="col-label">Type{indicateur('type')}</span>
+						<!-- oninput + onchange : Playwright selectOption() dispatch les deux events.
+						     On gère les deux pour garantir que filtreTypeId est mis à jour
+						     indépendamment du timing d'hydratation de Svelte. -->
+						<select
+							onclick={(e) => e.stopPropagation()}
+							oninput={(e) => {
+								const v = (e.currentTarget as HTMLSelectElement).value;
+								filtreTypeId = Number(v) || undefined;
+							}}
+							onchange={(e) => {
+								const v = (e.currentTarget as HTMLSelectElement).value;
+								filtreTypeId = Number(v) || undefined;
+							}}
+						>
+							<option value="">Tous</option>
+							{#each data.types as t (t.id)}
+								<option value={t.id} selected={filtreTypeId === t.id}>{t.nom}</option>
+							{/each}
+						</select>
+					</div>
 				</th>
 				<th onclick={() => trierPar('prixAchat')}>
-					<span class="col-label">Prix d'achat (€){indicateur('prixAchat')}</span>
-					<input
-						type="number"
-						bind:value={filtrePrixMin}
-						onclick={(e) => e.stopPropagation()}
-						placeholder="Min…"
-						min="0"
-						step="0.01"
-					/>
+					<div class="th-inner">
+						<span class="col-label">Prix d'achat (€){indicateur('prixAchat')}</span>
+						<input
+							type="number"
+							bind:value={filtrePrixMin}
+							onclick={(e) => e.stopPropagation()}
+							placeholder="Min…"
+							min="0"
+							step="0.01"
+						/>
+					</div>
 				</th>
 				<th onclick={() => trierPar('degreAlcool')}>
-					<span class="col-label">Degré d'alcool (%){indicateur('degreAlcool')}</span>
-					<input
-						type="number"
-						bind:value={filtreDegreMin}
-						onclick={(e) => e.stopPropagation()}
-						placeholder="Min…"
-						min="0"
-						max="100"
-						step="0.1"
-					/>
+					<div class="th-inner">
+						<span class="col-label">Degré d'alcool (%){indicateur('degreAlcool')}</span>
+						<input
+							type="number"
+							bind:value={filtreDegreMin}
+							onclick={(e) => e.stopPropagation()}
+							placeholder="Min…"
+							min="0"
+							max="100"
+							step="0.1"
+						/>
+					</div>
 				</th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each lignes as b (b.id)}
-				<tr onclick={() => goto(resolve('/spiritueux/[id]', { id: b.id.toString() }))}>
-					<td>{b.nom}</td>
+				{@const href = resolve('/spiritueux/[id]', { id: b.id.toString() })}
+				<tr onclick={() => goto(href)}>
+					<td><a {href} class="row-link">{b.nom}</a></td>
 					<td class="capitalize">{b.type}</td>
 					<td class="num">
 						{b.prixAchat.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}&nbsp;€
@@ -223,21 +244,40 @@
 		background: color-mix(in srgb, var(--color-primary) 5%, var(--color-surface));
 	}
 
+	/* Div wrapper à l'intérieur du th pour contrôler la hauteur.
+	   height:5rem → centre à 2.5rem → dans la zone label (0–3rem).
+	   position:relative pour positionner les inputs en absolu. */
+	.th-inner {
+		height: 5rem;
+		position: relative;
+	}
+
+	/* Le label occupe la moitié supérieure (0–3rem), garantissant que
+	   le centre géométrique (2.5rem) y tombe toujours. */
 	.col-label {
-		display: block;
-		padding: 0.75rem 0.75rem 1.25rem;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3rem;
+		display: flex;
+		align-items: center;
+		padding: 0 0.75rem;
 		font-weight: 600;
 		font-size: 0.9rem;
 		color: var(--color-fg-muted);
 	}
 
+	/* Les inputs sont positionnés dans la moitié inférieure (3rem–5rem) */
 	th input,
 	th select {
-		display: block;
+		position: absolute;
+		bottom: 0.4rem;
+		left: 0.5rem;
+		right: 0.5rem;
 		width: calc(100% - 1rem);
 		box-sizing: border-box;
 		padding: 0.2rem 0.4rem;
-		margin: 0 0.5rem 0.5rem;
 		border: 1px solid var(--color-border);
 		border-radius: 0.35rem;
 		background: var(--color-bg, white);
@@ -268,6 +308,14 @@
 
 	tbody tr:last-child td {
 		border-bottom: none;
+	}
+
+	.row-link {
+		color: inherit;
+		text-decoration: none;
+		display: block;
+		margin: -0.75rem;
+		padding: 0.75rem;
 	}
 
 	.capitalize {

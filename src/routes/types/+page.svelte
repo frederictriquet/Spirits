@@ -11,6 +11,7 @@
 
 <div class="wrapper">
 	<div class="entete">
+		<a href={resolve('/')} class="btn-retour">← Ma cave</a>
 		<h1>Types de spiritueux</h1>
 		<a href={resolve('/types/new')} class="btn-ajouter">Ajouter un type</a>
 	</div>
@@ -62,6 +63,22 @@
 		align-items: baseline;
 		justify-content: space-between;
 		margin-bottom: 1.5rem;
+		gap: 0.75rem;
+	}
+
+	.btn-retour {
+		padding: 0.5rem 1.25rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.5rem;
+		color: var(--color-fg-muted);
+		text-decoration: none;
+		font-size: 0.95rem;
+		white-space: nowrap;
+	}
+
+	.btn-retour:hover {
+		border-color: var(--color-primary);
+		color: var(--color-primary);
 	}
 
 	h1 {

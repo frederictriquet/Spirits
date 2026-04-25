@@ -3,7 +3,7 @@ import { typesSpiriteux, bouteilles } from './schema';
 import { eq, count } from 'drizzle-orm';
 
 export function getAllTypes() {
-	return db.select().from(typesSpiriteux).orderBy(typesSpiriteux.nom).all();
+	return db.select().from(typesSpiriteux).orderBy(typesSpiriteux.id).all();
 }
 
 export function getType(id: number) {
